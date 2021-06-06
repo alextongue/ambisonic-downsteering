@@ -8,7 +8,6 @@ function s = addPlaneWave(s,anglesDeg,gain_db)
         gain_db=0;
     end
     
-    
     anglesRad = deg2rad([anglesDeg(1), anglesDeg(2)+pi/2]);
     
     az_diff = (s.grid.theta - anglesRad(1));
