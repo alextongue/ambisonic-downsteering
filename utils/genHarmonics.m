@@ -22,5 +22,7 @@ function s = genHarmonics(ord_l, angularRes, normScheme, f)
 
     s.harmonics = grid2poly(s.grid, ord_l, normScheme);
 
+    s.signal{1} = [];
+    
 end
 
