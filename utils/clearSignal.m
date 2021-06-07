@@ -6,5 +6,7 @@ function s = clearSignal(s)
         s.harmonics = rmfield(s.harmonics,'coeffsigMasked');
     end
     
+    s.signal = cell(1);
+    
 end
 
