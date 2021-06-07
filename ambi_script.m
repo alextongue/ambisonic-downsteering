@@ -17,23 +17,27 @@ plotHarmonicSum(data, 0:5, 'sph', true);
 %%
 [xx,fs] = audioread('singletalk.wav');
 data.fs = fs;
-xx1 = xx((2*fs+1):(7*fs));
-xx2 = xx((2.5*fs+1):(7*fs));
-xx3 = xx((3*fs+1):(7*fs));
 
 %%
 data = clearSignal(data);
-data = encodeSignal(data, 1, xx1, [0,0], 0, false);
-data = encodeSignal(data, 1, xx2, [45,0], -12, false);
-data = encodeSignal(data, 1, xx3, [-90,-20], 0, false);
+data = encodeSignal(data, 1, xx((2*fs+1):(7*fs)), [0,0], 0, false);
+data = encodeSignal(data, 1, xx((2.5*fs+1):(7*fs)), [45,0], -12, false);
+data = encodeSignal(data, 1, xx((3*fs+1):(7*fs)), [-90,-20], 0, false);
 
-%%
-%make a masker
 data = maskSignal(data, 1, 2, 'x');
 
 %%
 close all;
-animateCoefficients(data, 1, 0:7, 1000, 'proj');
+animateCoefficients(data, 1, 0:5, 1000, 'proj');
 
-% todo: make simple binauralizer
-% todo: make inversions and calculate error wrt. frame
+%%
+data.beamsteer.spkrCoords   = [-30,0; -20,0; 20,0; 30,0];
+data.beamsteer.mu           = 0.1;
+data.beamsteer.beta         = 0.01;
+
+data = beamsteer_init(data, 1, 2);
+% data = beamsteer(data);
+
+% TODO:
+%   dbl check mtx dimensions
+%   begin inversion process and calculate error wrt. frame
