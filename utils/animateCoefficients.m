@@ -1,5 +1,8 @@
 function lp = animateCoefficients(s, signalIdx, plotOrders, downsamp, plotShape)
 
+    assert(numel(s.signal)>=signalIdx, 'invalid signal index')
+    assert(size(s.signal{signalIdx},1)>0, 'empty signal')
+
     res = s.grid.res;
     fs = s.fs;
     maxOrd = (numel(s.harmonics)-1);
@@ -30,6 +33,7 @@ function lp = animateCoefficients(s, signalIdx, plotOrders, downsamp, plotShape)
         totalCplxSum = zeros(s.grid.res,s.grid.res);
         harmonicMtx = zeros(numel(s.harmonics)^2,res,res);
         
+        % Concatenate harmonics
         channelIdx = 0;
         for mm_idx = 1:numel(s.harmonics)
             harmIdxs = channelIdx + (1:(mm_idx*2-1));
@@ -37,6 +41,8 @@ function lp = animateCoefficients(s, signalIdx, plotOrders, downsamp, plotShape)
             channelIdx = channelIdx + 2*mm_idx-1;
         end
         
+        
+        % Multiply concatenated signals and harmonics
         totalCplxSum = squeeze(sum(...
             harmonicMtx .* repmat(s.signal{signalIdx}(tt,:)', 1, res, res),...
             1));
@@ -81,8 +87,6 @@ function lp = animateCoefficients(s, signalIdx, plotOrders, downsamp, plotShape)
         %}
         
         
-        
-        
         if tt == 1
             fig = figure;
             if contains(plotShape, 'rec')
@@ -94,7 +98,6 @@ function lp = animateCoefficients(s, signalIdx, plotOrders, downsamp, plotShape)
                 zlim([-60,0]);
                 view(2); axis tight;
                 xlabel('Azi \theta'); ylabel('Elev. \delta');
-
                 
             elseif contains(plotShape, 'proj')
                 [Xpl,Ypl,Zpl] = sph2cart(...
@@ -104,7 +107,7 @@ function lp = animateCoefficients(s, signalIdx, plotOrders, downsamp, plotShape)
                     sf = surf(Xpl, Ypl, Zpl, 20*log10(abs(totalCplxSum)), 'edgealpha', 0.5);
                     caxis([-60,0]);
                     xlim([-1,1]); ylim([-1,1]); zlim([-1,1]);
-                    axis square;
+                    axis square; camorbit(90,0,'data')
                     xlabel('x'); ylabel('y');
                     
             elseif contains(plotShape, 'sph')
@@ -113,8 +116,9 @@ function lp = animateCoefficients(s, signalIdx, plotOrders, downsamp, plotShape)
                     s.grid.phi_gr, ...
                     abs(totalCplxSum));                 
                     sf = surf(Xpl, Ypl, Zpl, 'edgealpha', 0.5);
-                    xlim([-0.5,0.5]); ylim([-0.5,0.5]); zlim([-0.5,0.5]);
+                    xlim([-1,1]); ylim([-1,1]); zlim([-1,1]);
                     axis square;
+                    camorbit(90,0,'data')
                     xlabel('x'); ylabel('y');
             end
         else
