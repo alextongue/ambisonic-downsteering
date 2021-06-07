@@ -42,8 +42,6 @@ function lp = plotHarmonicSum(s, plotOrders, plotShape, plotCoeffs)
                 squeeze( sum(s.harmonics(mm_idx).total,1) );
         end
         
-        
-        
         hold on;
         if contains(plotShape,'proj','IgnoreCase', true)
             [Xpl, Ypl, Zpl] = sph2cart( ...
@@ -51,20 +49,22 @@ function lp = plotHarmonicSum(s, plotOrders, plotShape, plotCoeffs)
                 s.grid.phi_gr, ... % Daniel convention: elev. measured from north pole
                 ones(s.grid.res, s.grid.res));
             surf(Xpl,Ypl,Zpl,(sumCplx), ...
-                'edgealpha', 0.25);                            
+                'edgealpha', 0.25);
+            
         elseif contains(plotShape,'sph','IgnoreCase',true)
             [Xpl, Ypl, Zpl] = sph2cart( ...
                 s.grid.theta_gr, ...
                 s.grid.phi_gr, ... % Daniel convention: elev. measured from north pole
                 abs(sumCplx));
             surf(Xpl,Ypl,Zpl,(sumCplx), ...
-                'edgealpha', 0.25);            
+                'edgealpha', 0.25);
+            
         elseif contains(plotShape,'rec','IgnoreCase', true)
             surf(...
                 rad2deg(s.grid.theta_gr), ...
                 rad2deg(s.grid.phi_gr), ...
                 (sumCplx), ...
-                'edgealpha', 0);            
+                'edgealpha', 0);
         end
         hold off;
         
@@ -86,9 +86,7 @@ function lp = plotHarmonicSum(s, plotOrders, plotShape, plotCoeffs)
             abs(totalCplxSum));
         surf(Xpl,Ypl,Zpl,abs(totalCplxSum), ...
             'edgealpha', 0.25);
-        xlabel('[x]');
-        ylabel('[y]');
-        zlabel('[z]');
+        xlabel('[x]'); ylabel('[y]'); zlabel('[z]');
         
     elseif contains(plotShape,'proj','IgnoreCase', true)    
         [Xpl, Ypl, Zpl] = sph2cart( ...
@@ -97,9 +95,7 @@ function lp = plotHarmonicSum(s, plotOrders, plotShape, plotCoeffs)
             ones(s.grid.res,s.grid.res));
         surf(Xpl,Ypl,Zpl,abs(totalCplxSum), ...
             'edgealpha', 0.25);
-        xlabel('[x]');
-        ylabel('[y]');
-        zlabel('[z]');
+        xlabel('[x]'); ylabel('[y]'); zlabel('[z]');
         
     elseif contains(plotShape,'rec','IgnoreCase', true)
         surf(...
