@@ -105,9 +105,9 @@ function lp = animateCoefficients(s, signalIdx, plotOrders, downsamp, plotShape)
                     s.grid.phi_gr, ...
                     ones(res,res));          
                     sf = surf(Xpl, Ypl, Zpl, 20*log10(abs(totalCplxSum)), 'edgealpha', 0.5);
-                    caxis([-60,0]);
+                    caxis([-40,0]);
                     xlim([-1,1]); ylim([-1,1]); zlim([-1,1]);
-                    axis square; camorbit(90,0,'data')
+                    axis square; camorbit(90,0,'data');
                     xlabel('x'); ylabel('y');
                     
             elseif contains(plotShape, 'sph')
@@ -118,7 +118,7 @@ function lp = animateCoefficients(s, signalIdx, plotOrders, downsamp, plotShape)
                     sf = surf(Xpl, Ypl, Zpl, 'edgealpha', 0.5);
                     xlim([-1,1]); ylim([-1,1]); zlim([-1,1]);
                     axis square;
-                    camorbit(90,0,'data')
+                    camorbit(90,0,'data');
                     xlabel('x'); ylabel('y');
             end
         else
