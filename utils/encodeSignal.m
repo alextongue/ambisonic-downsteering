@@ -46,6 +46,7 @@ function s = encodeSignal(s, sigIdx, xx, angleDeg, gain_db, extendSignal)
         if sigLen>storedLen
             if extendSignal
                 s.harmonics(mm_idx).coeffsig((storedLen+1):sigLen,:) = 0;
+                fprintf('CoeffSigs extended to %d samps\n', sigLen);
             else
                 xx = xx(1:storedLen);
             end
