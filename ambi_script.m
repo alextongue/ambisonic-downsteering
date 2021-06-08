@@ -18,26 +18,37 @@ plotHarmonicSum(data, 0:5, 'sph', true);
 [xx,fs] = audioread('singletalk.wav');
 data.fs = fs;
 
+xx0 = xx((5*fs+1):(8.5*fs));
+xx1 = cat(1,zeros(2*fs,1), xx((5*fs+1):(8.5*fs)));
+xx2 = cat(1,zeros(4*fs,1), xx((5*fs+1):(8.5*fs)));
+xx3 = cat(1,zeros(6*fs,1), xx((5*fs+1):(8.5*fs)));
+xx4 = cat(1,zeros(8*fs,1), xx((5*fs+1):(8.5*fs)));
+
 %%
 data = clearSignal(data);
-data = encodeSignal(data, 1, xx((2*fs+1):(7*fs)), [0,0], 0, false);
-data = encodeSignal(data, 1, xx((2.5*fs+1):(7*fs)), [45,0], -12, false);
-data = encodeSignal(data, 1, xx((3*fs+1):(7*fs)), [-90,-20], 0, false);
+data = encodeSignal(data, 1, xx0, [0,0], -6, true); 
+data = encodeSignal(data, 1, xx1, [90,0], -6, true); 
+data = encodeSignal(data, 1, xx2, [-90,0], -6, true);
+data = encodeSignal(data, 1, xx3, [45,0], -6, false);
+data = encodeSignal(data, 1, xx4, [-45,0], -6, false);
 
 data = maskSignal(data, 1, 2, 'x');
-
+fighand = figure;
 %%
 close all;
-animateCoefficients(data, 1, 0:5, 1000, 'proj');
+animateCoefficients(data, 1, 0:5, 5000, 'proj');
 
 %%
-data.beamsteer.spkrCoords   = [-30,0; -20,0; 20,0; 30,0];
-data.beamsteer.mu           = 0.1;
-data.beamsteer.beta         = 0.01;
+data.beamsteer              = [];
+% data.beamsteer.spkrCoords   = [90,0; -90,0];
+data.beamsteer.spkrCoords   = [90,0; -90,0; 30,0; -30,0; 20,0; -20,0];
+data.beamsteer.mu0          = 10^(-40/20);
+data.beamsteer.beta0        = 10^(-200/20);
+data.beamsteer.alpha_step   = 10^(-120/20); % step decay (smaller = more smoothing)
 
 data = beamsteer_init(data, 1, 2);
-% data = beamsteer(data);
+%%
+data.beamsteer = beamsteer(data.beamsteer, data.fs);
+%%
 
-% TODO:
-%   dbl check mtx dimensions
-%   begin inversion process and calculate error wrt. frame
+plotConvergence(data.beamsteer,fighand,'\mu=-40dB, \beta=-200dB, \alpha=-120dB');
