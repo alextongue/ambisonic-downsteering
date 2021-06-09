@@ -24,7 +24,7 @@ function s = beamsteer_init(s, inSigIdx, maskSigIdx)
     s.beamsteer.D_FO        = zeros(4, spkrWidth); % FOA to spkr, 4xS
     s.beamsteer.D_FO_pinv   = zeros(sigLen,spkrWidth,4); % Sx4
     s.beamsteer.H           = zeros(sigLen,4,4); % 4x4
-    s.beamsteer.Hstep_mem   = zeros(4,4);
+    s.beamsteer.Hstep_prev  = zeros(4,4);
     
     % Calculate Decoders (simple sampled)
     spkrCoordsRad = deg2rad([spkrCoords(:,1)-pi/2, spkrCoords(:,2)+pi/2]);
@@ -36,15 +36,15 @@ function s = beamsteer_init(s, inSigIdx, maskSigIdx)
         [el_mindiff, el_idx] = min(abs(el_diff));
 
         tolerance = 0.1*pi/180; % 0.1[deg]
-        if (az_mindiff < tolerance && el_mindiff < tolerance)
-            fprintf('Exact match found at [%.1f,%.1f]\n', ...
-                rad2deg(s.grid.theta(az_idx)), ...
-                rad2deg(s.grid.phi(el_idx)));
-        else
-            fprintf('Non-exact match found at [%.1f,%.1f]\n', ...
-                rad2deg(s.grid.theta(az_idx)), ...
-                rad2deg(s.grid.phi(el_idx)));
-        end
+%         if (az_mindiff < tolerance && el_mindiff < tolerance)
+%             fprintf('Exact match found at [%.1f,%.1f]\n', ...
+%                 rad2deg(s.grid.theta(az_idx)), ...
+%                 rad2deg(s.grid.phi(el_idx)));
+%         else
+%             fprintf('Non-exact match found at [%.1f,%.1f]\n', ...
+%                 rad2deg(s.grid.theta(az_idx)), ...
+%                 rad2deg(s.grid.phi(el_idx)));
+%         end
         
         channelIdx = 0;
         for mm_idx = 1:numel(s.harmonics)
@@ -65,12 +65,12 @@ function s = beamsteer_init(s, inSigIdx, maskSigIdx)
     % initial values
     D_FO = s.beamsteer.D_FO;
 %     s.beamsteer.D_FO_pinv(1,:,:)   = D_FO'*inv(D_FO*D_FO' + s.beamsteer.beta0*eye(4)); % right inverse
-    s.beamsteer.D_FO_pinv(1,:,:)   = (D_FO'*D_FO + s.beamsteer.beta0*eye(spkrWidth))\(D_FO'); % right inverse
+    s.beamsteer.D_FO_pinv(1,:,:)    = (D_FO'*D_FO + s.beamsteer.beta0*eye(spkrWidth))\(D_FO'); % left inverse
 %     s.beamsteer.H(1,:,:)            = eye(4);
     
     % pre-decode binaural outputs
-    s.beamsteer.y             = s.beamsteer.B_M * s.beamsteer.D_HO;
-%     s.beamsteer.y_HOdec    = s.beamsteer.B_HO * s.beamsteer.D_HO;
-%     s.beamsteer.y_HOdec      = s.beamsteer.y_HOdec/max(s.beamsteer.y_HOdec,[],'all');
+    s.beamsteer.y           = s.beamsteer.B_M * s.beamsteer.D_HO;
+    s.beamsteer.y_ho_bypass = s.beamsteer.B_HO * s.beamsteer.D_HO;
+    s.beamsteer.y_fo_bypass = s.beamsteer.B_FO * s.beamsteer.D_FO;
 end
 

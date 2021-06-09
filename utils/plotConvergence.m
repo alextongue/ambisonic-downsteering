@@ -9,15 +9,44 @@ function figHandle = plotConvergence(sb,figHandle,legendName)
 %     figure; plot(10*log10(abs(data.beamsteer.err)));
     subplot(1,2,1);
     hold on;
-    plot(20*log10(abs(sb.loss)), 'displayname', legendName);
+    pl = plot(20*log10(abs(sb.loss)), ...
+        'linewidth', 1, ...
+        'displayname', legendName);
+    pl.Color(4) = 0.1;
     hold off;
-    title('Function Loss'); ylabel('Loss [dB]'); xlabel('Sample');
-    legend show;
+    grid on;
+    title('Function Loss (MSE)'); ylabel('Loss [dB]'); xlabel('Sample');
     
-    subplot(2,4,3); hold on; plot((sb.H(:,1,1))); hold off;
-    subplot(2,4,4); hold on; plot((sb.H(:,1,2))); hold off;
-    subplot(2,4,7); hold on; plot((sb.H(:,2,1))); hold off;
-    subplot(2,4,8); hold on; plot((sb.H(:,2,2))); hold off;
+    for rr = 1:4
+        for cc = 1:4
+            pltIdx = (rr-1)*8+4+cc;
+            subplot(4,8,pltIdx)
+            hold on;
+            plot(20*log10(abs(sb.H(:,rr,cc))), ...
+                'linewidth', 2, ...
+                'displayname', legendName);
+            ylim([-100,10]);
+            title(sprintf('(%d,%d)',rr,cc));
+            hold off;
+            grid on;
+            if all([rr,cc]==1)
+                legend show;
+            end
+        end
+    end
+    
 
 end
-
+%%
+% 
+% figure(2)
+% % subplot(1,2,1);
+% % xlim([0,24000]);
+% 
+% for rr = 1:4
+%     for cc = 1:4
+%         pltIdx = (rr-1)*8+4+cc;
+%         subplot(4,8,pltIdx)
+%         ylim([-120,40]);
+%     end
+% end

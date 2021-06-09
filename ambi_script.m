@@ -26,29 +26,45 @@ xx4 = cat(1,zeros(8*fs,1), xx((5*fs+1):(8.5*fs)));
 
 %%
 data = clearSignal(data);
-data = encodeSignal(data, 1, xx0, [0,0], -6, true); 
-data = encodeSignal(data, 1, xx1, [90,0], -6, true); 
-data = encodeSignal(data, 1, xx2, [-90,0], -6, true);
-data = encodeSignal(data, 1, xx3, [45,0], -6, false);
-data = encodeSignal(data, 1, xx4, [-45,0], -6, false);
+data = encodeSignal(data, 1, xx0, [90,0], -6, true); 
+data = encodeSignal(data, 1, xx1, [-90,0], -6, true);
+data = encodeSignal(data, 1, xx2, [45,0], -6, true);
+data = encodeSignal(data, 1, xx3, [-45,0], -6, false);
 
 data = maskSignal(data, 1, 2, 'x');
-fighand = figure;
+
 %%
 close all;
-animateCoefficients(data, 1, 0:5, 5000, 'proj');
+animateCoefficients(data, 1, 0:5, 1000, 'proj');
 
 %%
-data.beamsteer              = [];
-% data.beamsteer.spkrCoords   = [90,0; -90,0];
-data.beamsteer.spkrCoords   = [90,0; -90,0; 30,0; -30,0; 20,0; -20,0];
-data.beamsteer.mu0          = 10^(-40/20);
-data.beamsteer.beta0        = 10^(-200/20);
-data.beamsteer.alpha_step   = 10^(-120/20); % step decay (smaller = more smoothing)
-
-data = beamsteer_init(data, 1, 2);
+close all;
+fighandles = [];
 %%
-data.beamsteer = beamsteer(data.beamsteer, data.fs);
-%%
+sweepParams = -36:-12:-60;
+fighandles = [fighandles; figure];
+for ii = 1:numel(sweepParams)
+    fprintf('(%d of %d) param=%d\n', ii, numel(sweepParams), sweepParams(ii));
+    data.beamsteer              = [];
+    data.beamsteer.spkrCoords   = [20,0; -20,0; 30,0; -30,0; 90,0; -90,0];
+    data.beamsteer.mu0          = 10^(sweepParams(ii)/20); % LMS:-80
+    data.beamsteer.beta0        = 10^(-200/20); % LMS:-200
+    data.beamsteer.alpha_step   = 10^(-12/20); % step decay (smaller = more smoothing) (LMS:-12)
 
-plotConvergence(data.beamsteer,fighand,'\mu=-40dB, \beta=-200dB, \alpha=-120dB');
+    data = beamsteer_init(data, 2, 2);
+
+    data.beamsteer = beamsteer(data.beamsteer, data.fs);
+    
+    plotString = sprintf('\\mu=%d dB', sweepParams(ii));
+    plotConvergence(data.beamsteer, fighandles(end), plotString);
+end
+%%
+% todo: improve H values shooting up
+% todo: PAPER
+
+%%
+audiowrite('out_ho_masked.wav', data.beamsteer.y, data.fs);
+audiowrite('out_fo_adapt.wav', data.beamsteer.y_hat, data.fs);
+audiowrite('out_fo_byp.wav', data.beamsteer.y_fo_bypass, data.fs);
+audiowrite('out_ho_byp.wav', data.beamsteer.y_ho_bypass, data.fs);
+audiowrite('outhoa.wav', data.beamsteer.B_HO, data.fs);
