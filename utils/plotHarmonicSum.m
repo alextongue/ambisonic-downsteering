@@ -1,4 +1,4 @@
-function lp = plotHarmonicSum(s, plotOrders, plotShape, plotCoeffs)
+function lp = plotHarmonicSum(s, plotOrders, plotShape, plotStaticCoeffs)
 
     maxOrd = (numel(s.harmonics)-1);
     if isempty(plotOrders)
@@ -32,14 +32,13 @@ function lp = plotHarmonicSum(s, plotOrders, plotShape, plotCoeffs)
         sumMag = zeros(s.grid.res, s.grid.res);
         sumCplx = zeros(s.grid.res, s.grid.res);
         
-        if plotCoeffs
+        if plotStaticCoeffs
             sumCplx = ...
                 squeeze( sum(s.harmonics(mm_idx).total ...
                 .* repmat(s.harmonics(mm_idx).coeffs, 1, res, res),...
                 1) );
         else
-            sumCplx = ...
-                squeeze( sum(s.harmonics(mm_idx).total,1) );
+            sumCplx = squeeze( sum(s.harmonics(mm_idx).total,1) );
         end
         
         hold on;

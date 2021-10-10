@@ -2,7 +2,8 @@ close all; clearvars; clc;
 addpath('utils');
 
 %%
-data = genHarmonics(5, 100, 'n3d', 1000);
+ord = 5;
+data = genHarmonics(ord, 100, 'n3d', 1000);
 
 %%
 data = addStaticPlaneWave(data,[45,-20],0);
@@ -11,8 +12,7 @@ data = addStaticPlaneWave(data,[55,20],0);
 
 %%
 %plotHarmonics(data, 0:7, true);
-%plotHarmonicSum(data, 0:7, 'proj', true);
-plotHarmonicSum(data, 0:5, 'sph', true);
+plotHarmonicSum(data, 0:ord, 'proj', true);
 
 %%
 [xx,fs] = audioread('singletalk.wav');
